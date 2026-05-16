@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduNex — Autonomous AI Tutor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#0D1B2A;--navy2:#112236;--navy3:#1D2E40;--teal:#1D9E75;--teal-light:#5DCAA5;--teal-pale:#9FE1CB;--purple:#7F77DD;--purple-light:#AFA9EC;--blue:#378ADD;--blue-light:#B5D4F4;--white:#FFFFFF;--muted:#8AACCC;--dark-bar:#060E17;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 0% 0%,rgba(29,158,117,.08),transparent 70%),radial-gradient(ellipse 500px 400px at 100% 100%,rgba(127,119,221,.10),transparent 70%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(55,138,221,.12) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(13,27,42,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:17px;}
+.logo-text{font-family:'DM Serif Display',serif;font-size:21px;}
+.logo-text span{color:var(--teal-light);}
+.key-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.key-input{background:rgba(29,46,64,.95);border:1px solid rgba(55,138,221,.4);border-radius:10px;padding:7px 14px;color:var(--blue-light);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:240px;transition:border-color .2s;}
+.key-input:focus{border-color:rgba(29,158,117,.7);}
+.key-status{font-size:15px;}
+.test-btn{background:rgba(29,158,117,.2);border:1px solid rgba(29,158,117,.4);color:var(--teal-light);padding:7px 13px;border-radius:10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.test-btn:hover{background:rgba(29,158,117,.35);}
+.badge{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--teal-pale);border:1px solid rgba(29,158,117,.35);padding:5px 12px;border-radius:20px;text-transform:uppercase;white-space:nowrap;}
+.hero{text-align:center;padding:48px 24px 32px;border-bottom:1px solid rgba(255,255,255,.06);}
+.eyebrow{display:inline-block;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--teal-light);border:1px solid rgba(93,202,165,.3);padding:5px 16px;border-radius:20px;margin-bottom:18px;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,58px);line-height:1.1;margin-bottom:14px;background:linear-gradient(135deg,#fff 40%,var(--teal-pale));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 24px;line-height:1.7;}
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.pill{font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1px solid;}
+.pt{color:var(--teal-light);border-color:rgba(93,202,165,.4);background:rgba(29,158,117,.1);}
+.pb{color:var(--blue-light);border-color:rgba(55,138,221,.4);background:rgba(55,138,221,.1);}
+.pp{color:var(--purple-light);border-color:rgba(127,119,221,.4);background:rgba(127,119,221,.1);}
+.main{display:flex;flex:1;}
+.sidebar{width:250px;min-width:250px;background:rgba(17,34,54,.7);border-right:1px solid rgba(255,255,255,.07);padding:20px 14px;display:flex;flex-direction:column;gap:6px;}
+.sidebar-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin:10px 0 2px;}
+.sidebar-label:first-child{margin-top:0;}
+.sbtn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--blue-light);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;text-align:left;transition:all .18s;width:100%;}
+.sbtn:hover{background:rgba(55,138,221,.12);color:var(--white);}
+.sbtn.active{background:rgba(29,158,117,.18);color:var(--teal-light);border-color:rgba(29,158,117,.3);}
+.ico{font-size:15px;width:18px;text-align:center;}
+.mbtn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;text-align:left;transition:all .18s;width:100%;}
+.mbtn:hover{background:rgba(127,119,221,.12);color:var(--purple-light);}
+.mbtn.active{background:rgba(127,119,221,.15);color:var(--purple-light);border-color:rgba(127,119,221,.3);}
+.chat-area{flex:1;display:flex;flex-direction:column;max-width:800px;margin:0 auto;width:100%;}
+.messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:18px;min-height:400px;max-height:500px;}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:rgba(55,138,221,.3);border-radius:4px;}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:32px 0;}
+.welcome-icon{font-size:44px;}
+.welcome h2{font-family:'DM Serif Display',serif;font-size:26px;}
+.welcome p{font-size:14px;color:var(--muted);max-width:360px;line-height:1.7;}
+.starter-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;width:100%;max-width:460px;}
+.sc{background:rgba(29,46,64,.8);border:1px solid rgba(55,138,221,.2);border-radius:12px;padding:13px 15px;cursor:pointer;text-align:left;transition:all .2s;font-family:'DM Sans',sans-serif;color:var(--blue-light);font-size:13px;line-height:1.5;}
+.sc:hover{border-color:rgba(29,158,117,.5);color:var(--teal-pale);background:rgba(29,158,117,.08);transform:translateY(-2px);}
+.sc strong{display:block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.msg{display:flex;gap:11px;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse;}
+.avatar{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+.av-ai{background:linear-gradient(135deg,var(--teal),var(--purple));}
+.av-user{background:rgba(55,138,221,.25);color:var(--blue-light);font-size:11px;border:1px solid rgba(55,138,221,.3);}
+.bubble{max-width:78%;padding:13px 17px;border-radius:16px;font-size:14px;line-height:1.75;word-break:break-word;}
+.msg.ai .bubble{background:rgba(29,46,64,.9);border:1px solid rgba(55,138,221,.15);border-top-left-radius:4px;color:var(--blue-light);}
+.msg.user .bubble{background:rgba(29,158,117,.18);border:1px solid rgba(29,158,117,.3);border-top-right-radius:4px;color:var(--teal-pale);}
+.bubble strong{color:var(--white);}
+.bubble em{color:var(--purple-light);font-style:normal;}
+.bubble code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px;color:var(--teal-pale);}
+.bubble p{margin-bottom:8px;}
+.bubble p:last-child{margin-bottom:0;}
+.mode-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:10px;margin-bottom:8px;}
+.mb-explain{background:rgba(29,158,117,.2);color:var(--teal-light);}
+.mb-quiz{background:rgba(127,119,221,.2);color:var(--purple-light);}
+.mb-solve{background:rgba(55,138,221,.2);color:var(--blue-light);}
+.quiz-options{display:flex;flex-direction:column;gap:7px;margin-top:11px;}
+.qopt{padding:9px 13px;border-radius:10px;border:1px solid rgba(127,119,221,.3);background:rgba(127,119,221,.08);color:var(--purple-light);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;text-align:left;transition:all .18s;}
+.qopt:hover{background:rgba(127,119,221,.2);border-color:rgba(127,119,221,.6);color:var(--white);}
+.qopt.correct{background:rgba(29,158,117,.2);border-color:var(--teal);color:var(--teal-pale);cursor:default;}
+.qopt.wrong{background:rgba(200,60,60,.15);border-color:rgba(200,60,60,.5);color:#f09595;cursor:default;}
+.typing{display:flex;gap:5px;align-items:center;padding:4px 0;}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+.input-area{padding:18px 28px 22px;border-top:1px solid rgba(255,255,255,.07);background:rgba(13,27,42,.8);backdrop-filter:blur(8px);}
+.mode-tabs{display:flex;gap:6px;margin-bottom:11px;}
+.mtab{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;}
+.mtab:hover{color:var(--white);border-color:rgba(255,255,255,.25);}
+.ae{background:rgba(29,158,117,.18) !important;color:var(--teal-light) !important;border-color:rgba(29,158,117,.4) !important;}
+.aq{background:rgba(127,119,221,.18) !important;color:var(--purple-light) !important;border-color:rgba(127,119,221,.4) !important;}
+.as{background:rgba(55,138,221,.18) !important;color:var(--blue-light) !important;border-color:rgba(55,138,221,.4) !important;}
+.input-row{display:flex;gap:9px;align-items:flex-end;}
+textarea{flex:1;background:rgba(29,46,64,.9);border:1px solid rgba(55,138,221,.2);border-radius:13px;padding:12px 17px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;resize:none;outline:none;transition:border-color .2s;line-height:1.5;min-height:48px;max-height:130px;}
+textarea::placeholder{color:var(--muted);}
+textarea:focus{border-color:rgba(29,158,117,.5);}
+.send-btn{width:46px;height:46px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--teal),#0F6E56);color:white;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.send-btn:hover{transform:scale(1.06);}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.stats-bar{display:flex;border-top:1px solid rgba(255,255,255,.07);background:rgba(6,14,23,.8);}
+.stat{flex:1;padding:11px;text-align:center;border-right:1px solid rgba(255,255,255,.07);}
+.stat:last-child{border-right:none;}
+.stat-num{font-size:17px;font-weight:600;display:block;}
+.snt{color:var(--teal-light);}.snp{color:var(--purple-light);}.snb{color:var(--blue-light);}
+.stat-label{font-size:10px;color:var(--muted);margin-top:1px;}
+@media(max-width:680px){.sidebar{display:none;}.messages{padding:16px;}.input-area{padding:12px 16px 18px;}.starter-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">
+    <div class="logo-icon">📚</div>
+    <div class="logo-text">Edu<span>Nex</span></div>
+  </div>
+  <div class="key-wrap">
+    <input id="apiKey" class="key-input" type="password" placeholder="🔑 Paste OpenRouter API key (free)..." oninput="onKeyInput(this.value)"/>
+    <span id="keyStatus" class="key-status" title="No key">❌</span>
+    <button class="test-btn" onclick="testKey()">Test Key</button>
+    <div class="badge">AI Agent Olympics 2026</div>
+  </div>
+</header>
+<div class="hero">
+  <span class="eyebrow">Autonomous AI Tutor · Solo Project by Harish Nalajala</span>
+  <h1>Learn anything.<br/>Master everything.</h1>
+  <p>EduNex explains concepts, quizzes your understanding, and solves problems step-by-step — powered by OpenRouter AI (100% free).</p>
+  <div class="pills">
+    <span class="pill pt">All Subjects</span>
+    <span class="pill pb">Adaptive Quizzes</span>
+    <span class="pill pp">Step-by-Step Solving</span>
+    <span class="pill pt">24/7 Available</span>
+  </div>
+</div>
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-label">Subjects</div>
+    <button class="sbtn active" onclick="setSubject(this,'Mathematics')"><span class="ico">🔢</span>Mathematics</button>
+    <button class="sbtn" onclick="setSubject(this,'Physics')"><span class="ico">⚡</span>Physics</button>
+    <button class="sbtn" onclick="setSubject(this,'Chemistry')"><span class="ico">🧪</span>Chemistry</button>
+    <button class="sbtn" onclick="setSubject(this,'Biology')"><span class="ico">🧬</span>Biology</button>
+    <button class="sbtn" onclick="setSubject(this,'History')"><span class="ico">📜</span>History</button>
+    <button class="sbtn" onclick="setSubject(this,'Coding')"><span class="ico">💻</span>Coding</button>
+    <button class="sbtn" onclick="setSubject(this,'Literature')"><span class="ico">📖</span>Literature</button>
+    <button class="sbtn" onclick="setSubject(this,'Economics')"><span class="ico">📊</span>Economics</button>
+    <div class="sidebar-label">Learning Mode</div>
+    <button class="mbtn active" onclick="setSideMode(this,'explain')">💡 Explain concepts</button>
+    <button class="mbtn" onclick="setSideMode(this,'quiz')">🧠 Quiz me</button>
+    <button class="mbtn" onclick="setSideMode(this,'solve')">🔍 Solve problems</button>
+  </aside>
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🎓</div>
+        <h2>Hi, I'm your EduNex tutor!</h2>
+        <p>Paste your free OpenRouter key above, then ask me anything!</p>
+        <div class="starter-grid">
+          <button class="sc" onclick="sendStarter('Explain Newtons laws of motion simply')"><strong>⚡ Physics</strong>Explain Newton's laws of motion simply</button>
+          <button class="sc" onclick="sendStarter('Quiz me on the French Revolution')"><strong>📜 History</strong>Quiz me on the French Revolution</button>
+          <button class="sc" onclick="sendStarter('Solve: What is the derivative of x squared plus 3x')"><strong>🔢 Maths</strong>Solve: derivative of x² + 3x</button>
+          <button class="sc" onclick="sendStarter('Explain how DNA replication works')"><strong>🧬 Biology</strong>Explain how DNA replication works</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="mode-tabs">
+        <button class="mtab ae" id="tab-explain" onclick="setMode('explain')">💡 Explain</button>
+        <button class="mtab" id="tab-quiz" onclick="setMode('quiz')">🧠 Quiz</button>
+        <button class="mtab" id="tab-solve" onclick="setMode('solve')">🔍 Solve</button>
+      </div>
+      <div class="input-row">
+        <textarea id="inputBox" rows="1" placeholder="Ask me anything about any subject..."
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num snt" id="statQ">0</span><div class="stat-label">Questions asked</div></div>
+  <div class="stat"><span class="stat-num snp" id="statQz">0</span><div class="stat-label">Quizzes taken</div></div>
+  <div class="stat"><span class="stat-num snb" id="statS">0</span><div class="stat-label">Problems solved</div></div>
+  <div class="stat"><span class="stat-num snt">Free</span><div class="stat-label">OpenRouter AI</div></div>
+</div>
+</div>
+<script>
+var mode = 'explain';
+var subject = 'Mathematics';
+var chatHistory = [];
+var counts = {q:0, qz:0, s:0};
+var mIdx = 0;
+var MODELS = [
+  'openrouter/free',
+  'deepseek/deepseek-r1:free',
+  'deepseek/deepseek-chat-v3-0324:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'qwen/qwen3-14b:free'
+];
+
+function onKeyInput(val) {
+  var s = document.getElementById('keyStatus');
+  if (val && val.startsWith('sk-or-') && val.length > 20) { s.textContent='✅'; s.title='Key looks valid!'; }
+  else if (val.length > 0) { s.textContent='⚠️'; s.title='Should start with sk-or-'; }
+  else { s.textContent='❌'; s.title='No key'; }
+}
+
+async function testKey() {
+  var key = document.getElementById('apiKey').value.trim();
+  if (!key) { alert('Paste your OpenRouter key first!'); return; }
+  var s = document.getElementById('keyStatus');
+  s.textContent = '⏳';
+  try {
+    var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':window.location.href,'X-Title':'EduNex'},
+      body:JSON.stringify({model:'openrouter/free',max_tokens:10,messages:[{role:'user',content:'Hi'}]})
+    });
+    if (r.status===200) { s.textContent='✅'; alert('✅ Key works! EduNex is ready.'); }
+    else { var d=await r.json(); s.textContent='❌'; alert('❌ Error '+r.status+': '+(d?.error?.message||'Invalid key')); }
+  } catch(e) { s.textContent='⚠️'; alert('Network error: '+e.message); }
+}
+
+function setMode(m) {
+  mode = m;
+  ['explain','quiz','solve'].forEach(function(x) {
+    var t = document.getElementById('tab-'+x);
+    t.className = 'mtab' + (x===m ? (' a'+x[0]) : '');
+  });
+  var ph = {explain:'Ask me to explain any concept...',quiz:'Tell me a topic and I will quiz you...',solve:'Give me a problem to solve step by step...'};
+  document.getElementById('inputBox').placeholder = ph[m];
+  document.querySelectorAll('.mbtn').forEach(function(b){ b.classList.toggle('active', b.textContent.toLowerCase().indexOf(m)>-1); });
+}
+
+function setSideMode(btn, m) {
+  document.querySelectorAll('.mbtn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  setMode(m);
+}
+
+function setSubject(btn, s) {
+  subject = s;
+  document.querySelectorAll('.sbtn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function handleKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
+
+function hideWelcome() { var w=document.getElementById('welcome'); if(w) w.remove(); }
+
+function scrollBottom() { var m=document.getElementById('messages'); m.scrollTop=m.scrollHeight; }
+
+function fmt(text) {
+  return '<p>'+text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`(.*?)`/g,'<code>$1</code>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br/>')+'</p>';
+}
+
+function addMsg(role, text) {
+  hideWelcome();
+  var msgs = document.getElementById('messages');
+  var div = document.createElement('div'); div.className='msg '+role;
+  var av = document.createElement('div'); av.className='avatar '+(role==='ai'?'av-ai':'av-user'); av.textContent=role==='ai'?'🎓':'HN';
+  var bub = document.createElement('div'); bub.className='bubble';
+  if (role==='ai') {
+    var badge=document.createElement('div');
+    var labs={explain:'💡 Explaining',quiz:'🧠 Quiz Time',solve:'🔍 Solving'};
+    badge.className='mode-badge mb-'+mode; badge.textContent=labs[mode]||mode;
+    bub.appendChild(badge);
+  }
+  var txt=document.createElement('div'); txt.innerHTML=fmt(text); bub.appendChild(txt);
+  div.appendChild(av); div.appendChild(bub); msgs.appendChild(div); scrollBottom();
+  return bub;
+}
+
+function addTyping() {
+  hideWelcome();
+  var msgs=document.getElementById('messages');
+  var div=document.createElement('div'); div.className='msg ai'; div.id='typing';
+  var av=document.createElement('div'); av.className='avatar av-ai'; av.textContent='🎓';
+  var bub=document.createElement('div'); bub.className='bubble';
+  bub.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  div.appendChild(av); div.appendChild(bub); msgs.appendChild(div); scrollBottom();
+}
+
+function removeTyping() { var t=document.getElementById('typing'); if(t) t.remove(); }
+
+function updateCounts() {
+  document.getElementById('statQ').textContent=counts.q;
+  document.getElementById('statQz').textContent=counts.qz;
+  document.getElementById('statS').textContent=counts.s;
+}
+
+function sendStarter(text) { document.getElementById('inputBox').value=text; sendMessage(); }
+
+function buildPrompt() {
+  var m = {
+    explain:'You are EduNex, an expert AI tutor. EXPLAIN concepts clearly and simply.\n- Use student-friendly language with examples and analogies\n- Structure: overview, key ideas, example, summary\n- Use **bold** for key terms\n- End with a follow-up question',
+    quiz:'You are EduNex, an expert AI tutor in QUIZ mode.\n- Create 1 multiple-choice question on the topic\n- Format: question, then A) B) C) D) each on its own line\n- After answer reveal use **bold** for correct answer with explanation',
+    solve:'You are EduNex, an expert AI tutor in SOLVE mode.\n- Solve step-by-step with numbered steps\n- Show ALL working, explain each step\n- Use **bold** for step headers\n- Summarize the method at the end'
+  };
+  return m[mode]+'\n\nSubject: '+subject+'\nBe encouraging and patient with the student.';
+}
+
+async function sendMessage() {
+  var inputEl = document.getElementById('inputBox');
+  var text = inputEl.value.trim();
+  if (!text) return;
+  var key = document.getElementById('apiKey').value.trim();
+  if (!key) { alert('Please paste your free OpenRouter API key!\n\nGet it free at: openrouter.ai'); return; }
+  var btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  inputEl.value = ''; inputEl.style.height='auto';
+  addMsg('user', text);
+  counts.q++; if(mode==='quiz') counts.qz++; if(mode==='solve') counts.s++;
+  updateCounts();
+  chatHistory.push({role:'user',content:text});
+  if (chatHistory.length>20) chatHistory=chatHistory.slice(-20);
+  addTyping();
+  var messages = [{role:'system',content:buildPrompt()}].concat(chatHistory);
+  var tried=0, res=null, data=null;
+  while (tried < MODELS.length) {
+    try {
+      res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':window.location.href,'X-Title':'EduNex AI Tutor'},
+        body:JSON.stringify({model:MODELS[mIdx],max_tokens:1000,temperature:0.7,messages:messages})
+      });
+      data = await res.json();
+      if (res.ok) break;
+      mIdx=(mIdx+1)%MODELS.length; tried++;
+    } catch(e) { mIdx=(mIdx+1)%MODELS.length; tried++; }
+  }
+  removeTyping();
+  if (!res||!res.ok) {
+    var em = data&&data.error?data.error.message:'All free models busy. Please retry in a moment.';
+    if (res&&(res.status===401||res.status===403)) em='Invalid API key. Get your free key at openrouter.ai';
+    addMsg('ai','**Error:** '+em);
+    btn.disabled=false; return;
+  }
+  var reply = data&&data.choices&&data.choices[0]?data.choices[0].message.content:'Sorry, no response. Please try again.';
+  chatHistory.push({role:'assistant',content:reply});
+  var bub = addMsg('ai', reply);
+  if (mode==='quiz' && /[A-D]\)/.test(reply)) addQuizOptions(reply, bub);
+  btn.disabled=false;
+  inputEl.focus();
+}
+
+function addQuizOptions(reply, bub) {
+  var matches = reply.match(/[A-D]\)[^\n]+/g);
+  if (!matches||matches.length<2) return;
+  var cont=document.createElement('div'); cont.className='quiz-options';
+  matches.forEach(function(opt){
+    var b=document.createElement('button'); b.className='qopt'; b.textContent=opt.trim();
+    b.onclick=function(){ handleAnswer(b,cont,reply); };
+    cont.appendChild(b);
+  });
+  bub.appendChild(cont);
+}
+
+function handleAnswer(sel, cont, reply) {
+  cont.querySelectorAll('.qopt').forEach(function(b){ b.onclick=null; b.style.cursor='default'; });
+  sel.classList.add('wrong');
+  var m=reply.match(/[Aa]nswer[:\s]+([A-D])/);
+  if(m) cont.querySelectorAll('.qopt').forEach(function(b){ if(b.textContent.trim()[0]===m[1]) b.classList.add('correct'); });
+}
+</script>
+</body>
+</html>
